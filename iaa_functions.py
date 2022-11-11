@@ -7,23 +7,27 @@ from sklearn.metrics import cohen_kappa_score, accuracy_score
 from wasabi import table
 
 
+# YOUR PACKAGE
+import catalogue
+
+iaa_functions_registry = catalogue.create("prodigy-iaa-poc", "functions")
+
 ExampleDict = Dict[str, Any]
 
 
-@spacy.registry.misc("get_task_hash")
+@iaa_functions_registry.register("get_task_hash")
 def get_task_hash(example: Dict[str, Any]):
     return example["_task_hash"]
 
 
-@spacy.registry.misc("datasets.two-annotators")
+@iaa_functions_registry.register("datasets.two-annotators")
 def datasets_binary(
     datasets: List[str], overlap_key: Optional[str]
 ) -> List[Tuple[ExampleDict, ExampleDict]]:
-    # We could more strongly type this as a tuple in the binary case
     if not overlap_key:
-        overlap_key_function = spacy.registry.get("misc", "get_task_hash")
+        overlap_key_function = iaa_functions_registry.get("get_task_hash")
     else:
-        overlap_key_function = spacy.registry.get("misc", overlap_key)
+        overlap_key_function = iaa_functions_registry.get(overlap_key)
 
     d1, d2 = datasets[0], datasets[1]
     DB = prodigy.components.db.connect()
@@ -59,15 +63,15 @@ def datasets_binary(
     return paired_examples
 
 
-@spacy.registry.misc("sessions.two-annotators")
+@iaa_functions_registry.register("sessions.two-annotators")
 def sessions_binary(
     dataset: str, session_ids: List[str], overlap_key: Optional[str]
 ) -> List[Tuple[ExampleDict, ExampleDict]]:
     # We could more strongly type this as a tuple in the binary case
     if not overlap_key:
-        overlap_key_function = spacy.registry.get("misc", "get_task_hash")
+        overlap_key_function = iaa_functions_registry.get("get_task_hash")
     else:
-        overlap_key_function = spacy.registry.get("misc", overlap_key)
+        overlap_key_function = iaa_functions_registry.get(overlap_key)
 
     s1, s2 = session_ids[0], session_ids[1]
     DB = prodigy.components.db.connect()
@@ -104,7 +108,7 @@ def sessions_binary(
     return paired_examples
 
 
-@spacy.registry.misc("transform.binarize-accept")
+@iaa_functions_registry.register("transform.binarize-accept")
 def binarize_accept(paired_examples: List[Tuple[ExampleDict, ExampleDict]]):
     def intify_accept(example):
         return int(example["answer"] == "accept")
@@ -115,21 +119,21 @@ def binarize_accept(paired_examples: List[Tuple[ExampleDict, ExampleDict]]):
     return binarized_examples
 
 
-@spacy.registry.misc("cohens_kappa.stdout")
+@iaa_functions_registry.register("cohens_kappa.stdout")
 def cohens_kappa(overlapping_annotaions: List[Tuple[int, int]]):
     a1, a2 = zip(*overlapping_annotaions)
     kappa = cohen_kappa_score(a1, a2)
     print(f"Cohen's Kappa: {kappa:.3f}")
 
 
-@spacy.registry.misc("agreement.stdout")
+@iaa_functions_registry.register("agreement.stdout")
 def agreement(overlapping_annotaions: List[Tuple[int, int]]):
     a1, a2 = zip(*overlapping_annotaions)
     agreement = accuracy_score(a1, a2)
     print(f"Raw Agreement: {agreement:.3f}")
 
 
-@spacy.registry.misc("kappa_agreement.stdout")
+@iaa_functions_registry.register("kappa_agreement.stdout")
 def kappa_agreement(overlapping_annotaions: List[Tuple[int, int]]):
     a1, a2 = zip(*overlapping_annotaions)
     agreement = accuracy_score(a1, a2)

@@ -8,11 +8,11 @@ Each recipe has four arguments in common:
 1. **A `collector` function.** This function collects examples per annotator from prodigy and outputs overlapping examples so that they're paired by task (or some given `overlap_key`)
 2. **A `processor` function.** This function takes the collected overlapping examples and transforms them into the data structure required for calculating your metric.  This can be anything from binarizing your accept/reject decisions to extracting labels from NER/Spans.
 3. **A `metric_output` function.** This function takes the processed examples and calculates the metric(s) of interest and outputs them where necessary.
-4. **An `overlap_key` function.** This function can be used to customize how a unique example is defined for determining overlapping examples. It will use `_task_hash` by default, but could bet set to something like `meta['custom_key']`.
+4. **An `overlap_key` function.** This function can be used to customize how a unique example is defined for determining overlapping examples. It will use `_task_hash` by default, but could be set to something like `meta['custom_key']`.
 
-All functions need to be registered in the `misc` registry with spaCy.
+All functions need to be named and registered in an example `prodigy-iaa-poc` registry namespaced with `functions` using [catalogue](https://github.com/explosion/catalogue).
 
-There are two files in this repo: `iaa_recipe.py` which holds the core functionality to execute the recipes and `iaa_functions.py` which holds some example functions for the usecase of a two-annotator binary task.
+There are two files in this repo: `iaa_recipe.py` which holds the core functionality for the recipes and `iaa_functions.py` which holds some example functions for the use-case of a two-annotator binary task.
 
 **A note on API choices**
 

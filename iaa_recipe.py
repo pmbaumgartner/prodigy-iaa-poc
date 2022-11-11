@@ -1,7 +1,7 @@
-from typing import List, Callable, Tuple, Any, Optional
-import spacy
+from typing import List, Optional
 import prodigy
 from prodigy.util import msg
+from iaa_functions import iaa_functions_registry
 
 
 @prodigy.recipe(
@@ -25,16 +25,16 @@ def iaa_datasets(
     if not overlap_key:
         overlap_key = "get_task_hash"
 
-    collector_func = spacy.registry.get("misc", collector)
+    collector_func = iaa_functions_registry.get(collector)
     with msg.loading("Identifying overlapped examples."):
         overlapped_annotations = collector_func(datasets, overlap_key)
     msg.info("Identified overlapped examples.")
 
-    processor_func = spacy.registry.get("misc", processor)
+    processor_func = iaa_functions_registry.get(processor)
     processed_annotations = processor_func(overlapped_annotations)
     msg.info("Processed overlapped examples.")
 
-    output_func = spacy.registry.get("misc", metric_output)
+    output_func = iaa_functions_registry.get(metric_output)
     msg.info("Calculating metric.")
 
     # this needs to calculate and output
@@ -64,16 +64,16 @@ def iaa_sessions(
     if not overlap_key:
         overlap_key = "get_task_hash"
 
-    collector_func = spacy.registry.get("misc", collector)
+    collector_func = iaa_functions_registry.get(collector)
     with msg.loading("Identifying overlapped examples."):
         overlapped_annotations = collector_func(dataset, session_ids, overlap_key)
     msg.info("Identified overlapped examples.")
 
-    processor_func = spacy.registry.get("misc", processor)
+    processor_func = iaa_functions_registry.get(processor)
 
     processed_annotations = processor_func(overlapped_annotations)
     msg.info("Processed overlapped examples.")
-    output_func = spacy.registry.get("misc", metric_output)
+    output_func = iaa_functions_registry.get(metric_output)
 
     # This needs to calculate and output
     output_func(processed_annotations)
