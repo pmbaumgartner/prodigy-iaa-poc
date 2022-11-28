@@ -1,3 +1,5 @@
+**Archived**. Please use https://github.com/pmbaumgartner/prodigy-iaa.
+
 # Prodigy IAA/IRR Proof of Concept
 
 This is a proof of concept for how IAA/IRR metrics might be implemented as a Prodigy recipe. The recipes were written to be general enough that a user could customize where the examples come from, how they're transformed into data for metric calculation, and the output of the metrics.
